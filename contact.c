@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
  
+#define RUN argv[0] // Stores the run command
 #define command argv[1] // The first cl argument is always the command 
 #define NAME argv[2] // The second cl argument is always the name
 #define PHONE argv[3] // The third cl argument is always the phone number
@@ -21,7 +22,7 @@ typedef struct{
 } contact; // Type that keeps name, phone and email.
 
 void add (string *argv, contact *person);
-int is_correct_input(int argc);
+int is_correct_input(int argc, string *argv);
 void list (contact *person);
 void search(string *argv, contact *person);
 void cancel(string *argv, contact *person);
@@ -36,7 +37,7 @@ int main(int argc, string argv[]) // Collecting CLA
                         };              
     
     // Checking for a command                   
-    if (is_correct_input(argc) == FAIL) // Using my function for checking at least one command line argument (CLA)
+    if (is_correct_input(argc, argv) == FAIL) // Using my function for checking at least one command line argument (CLA)
         return FAIL;
     else
     {
@@ -103,19 +104,19 @@ int main(int argc, string argv[]) // Collecting CLA
         else
         {
             // When the correct commands aren't written 
-            printf ("Not a valid command.\nCommand(add 'FULL NAME' PHONE EMAIL/ list / search FIRSTNAME / number_of_contacts / remove FIRSTNAME)\n");
+            printf ("Not a valid command.\n%s add 'FULL NAME' PHONE EMAIL \n%s list \n%s search FIRSTNAME \n%s number_of_contacts \n%s remove FIRSTNAME\n",RUN, RUN,RUN,RUN,RUN);
             return FAIL;
         }
     }
     return 0;
 }
- 
+
 // Function that checks for at least a command 
-int is_correct_input(int argc)
+int is_correct_input(int argc, string *argv)
 {
     if (argc < RUNnCOMMAND)
     {
-        printf("Usage: ./contact Command(add 'FULL NAME' PHONE EMAIL/ list / search FIRSTNAME / number_of_contacts / remove FIRSTNAME)\n");
+        printf("Usage:\n%s add 'FULL NAME' PHONE EMAIL \n%s list \n%s search FIRSTNAME \n%s number_of_contacts \n%s remove FIRSTNAME\n",RUN, RUN,RUN,RUN,RUN);
         return FAIL;
     }
     return 0;
