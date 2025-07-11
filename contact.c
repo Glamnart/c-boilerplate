@@ -33,7 +33,6 @@ int main(int argc, string argv[]) // Collecting CLA
                         {"John Thomas", "08098765464", "johnthm@yahoo.com"},
                         {"Anne Hall", "09136525564", "hallofanne@gmail.com"},
                         {"Hassan Usman", "08198245894", "husman@yahoo.com"},
-                        {"", "", ""}
                         };              
     
     // Checking for a command                   
