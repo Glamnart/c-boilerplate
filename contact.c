@@ -29,13 +29,16 @@ void cancel(string *argv, contact *person);
 
 int main(int argc, string argv[]) // Collecting CLA 
 {
+    FILE *contact_book = fopen( "contactbook.txt", "a");
+    if(contact_book == NULL)
+    {
+        printf("File not available.\n");
+        return 1;
+    }
+    for (fgetc(contact_book) != EOF)
+
     // Variable that stores the default contacts and extra space.
-    contact person[CONTACTSPACE] = {
-                        {"John Thomas", "08098765464", "johnthm@yahoo.com"},
-                        {"Anne Hall", "09136525564", "hallofanne@gmail.com"},
-                        {"Hassan Usman", "08198245894", "husman@yahoo.com"},
-                        };              
-    
+    contact *person = malloc(sizeof(contact)* )
     // Checking for a command                   
     if (is_correct_input(argc, argv) == FAIL) // Using my function for checking at least one command line argument (CLA)
         return FAIL;
@@ -109,6 +112,7 @@ int main(int argc, string argv[]) // Collecting CLA
         }
     }
     return 0;
+    fclose(contact_book);
 }
 
 // Function that checks for at least a command 
