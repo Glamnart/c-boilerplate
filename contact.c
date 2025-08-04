@@ -1,333 +1,200 @@
-#include "include/input_utils.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
- 
-#define RUN argv[0] // Stores the run command
-#define command argv[1] // The first cl argument is always the command 
-#define NAME argv[2] // The second cl argument is always the name
-#define PHONE argv[3] // The third cl argument is always the phone number
-#define EMAIL argv[4] // The fourth cl argument is always the email
-#define CONTACTSPACE 4
-#define USEDSPACE 3
-#define MATCH 0
-#define FAIL 1
-#define RUNnCOMMAND 2 // means run and command : abstracts the counting of the command line arguments
 
+#define MAX_CONTACTS 100
 
-typedef struct{
-    char name[50];
-    char phone[20];
-    char email[50];
-} contact; // Type that keeps name, phone and email.
+typedef struct {
+    char *name;
+    char *phone;
+    char *email;
+} Contact;
 
-void add (string *argv, contact *person);
-int is_correct_input(int argc, string *argv);
-void list (contact *person);
-void search(string *argv, contact *person);
-void cancel(string *argv, contact *person);
+Contact *contacts = NULL;
+int contact_count = 0;
 
-int main(int argc, string argv[]) // Collecting CLA 
-{
-    FILE *contact_book = fopen( "contactbook.txt", "a");
-    if(contact_book == NULL)
-    {
-        printf("File not available.\n");
-        return 1;
-    }
-    for (fgetc(contact_book) != EOF)
+// Function Prototypes
+void load_contacts(const char *filename);
+void save_contacts(const char *filename);
+void add_contact();
+void view_contacts();
+void update_contact();
+void delete_contact();
+void free_contacts();
 
-    // Variable that stores the default contacts and extra space.
-    contact *person = malloc(sizeof(contact)* )
-    // Checking for a command                   
-    if (is_correct_input(argc, argv) == FAIL) // Using my function for checking at least one command line argument (CLA)
-        return FAIL;
-    else
-    {
-        if (strcmp(command, "add") == MATCH) // Checking if user wants to add a contact
-        { 
-            if (argc != (3 + RUNnCOMMAND)) // Making sure the add command is  properly used, it takes 3 inputs
-            {
-                printf("Usage: ./contact add 'FULL NAME' PHONE EMAIL\n");
-                return FAIL;
-            }
-            else 
-            {
-                if (strlen(PHONE) > 20) // Checks so that boundaries are not exceeded
-                {
-                    printf("Too many numbers as phone\n");
-                    return FAIL;
-                }
-                else 
-                    add (argv, person); // Function call that adds the contact to the storage
-            }
-        } 
-        else if (strcmp(command, "list") == MATCH) // Checking if user wants to see available contacts
-        {
-            if (argc != RUNnCOMMAND) // Making sure the lists command is  properly used, it takes no input
-            {
-                printf("Usage: ./contact list \n");
-                return FAIL;
-            }
-            else
-                list (person); // Function call that lists the contacts in the storage
+int main(void) {
+    const char *filename = "contacts.csv";
+    load_contacts(filename);
+
+    int choice;
+    do {
+        printf("\n==== Contacts Menu ====\n");
+        printf("1. View Contacts\n");
+        printf("2. Add Contact\n");
+        printf("3. Update Contact\n");
+        printf("4. Delete Contact\n");
+        printf("5. Save & Exit\n");
+        printf("=======================\n");
+        printf("Choice: ");
+        scanf("%d", &choice);
+        getchar(); // consume newline
+
+        switch (choice) {
+            case 1: view_contacts(); break;
+            case 2: add_contact(); break;
+            case 3: update_contact(); break;
+            case 4: delete_contact(); break;
+            case 5: save_contacts(filename); break;
+            default: printf("Invalid option\n");
         }
-        else if (strcmp(command, "search") == MATCH) // Checking if user wants to search for a contact
-        {
-            if (argc != (RUNnCOMMAND + 1)) // Making sure the search command is  properly used, it takes 1 input
-            {
-                printf("Usage: ./contact search FIRSTNAME\n");
-                return FAIL;
-            }  
-            else
-                search(argv, person); // Function call that searches the contact in the storage
+    } while (choice != 5);
 
-        }
-        else if (strcmp(command, "number_of_contacts") == MATCH ) // Checking if user wants to know number of contacts available
-        {
-            if (argc != RUNnCOMMAND) // Making sure the number_of_contacts command is  properly used, it takes no input
-            {
-                printf("Usage: ./contact number_of_contacts\n");
-                return FAIL;   
-            }  
-            else
-                printf("Your total number of available contacts is %li.\n", (sizeof(person) / sizeof(contact)) - 1);
-
-        }
-        else if (strcmp(command, "remove") == MATCH ) // Checking if user wants to remove a contact
-        {
-            if (argc != (RUNnCOMMAND + 1)) // Making sure the remove command is  properly used, it takes 1 input
-            {
-                printf("Usage: ./contact remove FIRSTNAME\n");
-                return FAIL;   
-            }  
-            else
-                cancel(argv, person); // Function call that cancels the contact from the storage
-        }
-        else
-        {
-            // When the correct commands aren't written 
-            printf ("Not a valid command.\n%s add 'FULL NAME' PHONE EMAIL \n%s list \n%s search FIRSTNAME \n%s number_of_contacts \n%s remove FIRSTNAME\n",RUN, RUN,RUN,RUN,RUN);
-            return FAIL;
-        }
-    }
-    return 0;
-    fclose(contact_book);
-}
-
-// Function that checks for at least a command 
-int is_correct_input(int argc, string *argv)
-{
-    if (argc < RUNnCOMMAND)
-    {
-        printf("Usage:\n%s add 'FULL NAME' PHONE EMAIL \n%s list \n%s search FIRSTNAME \n%s number_of_contacts \n%s remove FIRSTNAME\n",RUN, RUN,RUN,RUN,RUN);
-        return FAIL;
-    }
+    free_contacts();
     return 0;
 }
 
-// Function that adds new contact
-void add (string *argv, contact *person)
-{
-    // Copies the user's input into it's corresponding category in the empty space in person
-    strcpy(person[USEDSPACE].name, NAME); 
-    strcpy(person[USEDSPACE].phone, PHONE);
-    strcpy(person[USEDSPACE].email, EMAIL);
-    char list;
-    do 
-    {
-        list = get_char("Would like to see full list?(Y/n): "); // Checks if they want to see the new contact list
+void load_contacts(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (!file) return;
+
+    char line[256];
+    while (fgets(line, sizeof(line), file)) {
+        contacts = realloc(contacts, sizeof(Contact) * (contact_count + 1));
+
+        char *name = strtok(line, ",\n");
+        char *phone = strtok(NULL, ",\n");
+        char *email = strtok(NULL, ",\n");
+
+        contacts[contact_count].name = malloc(strlen(name) + 1);
+        strcpy(contacts[contact_count].name, name);
+        contacts[contact_count].phone = malloc(strlen(phone) + 1);
+        strcpy(contacts[contact_count].phone, phone);
+        contacts[contact_count].email = malloc(strlen(email) + 1);
+        strcpy(contacts[contact_count].email, email);
+
+        contact_count++;
     }
-    while (list != 'y' && list != 'Y' && list != 'n' && list != 'N');
-    if (list == 'y' || list == 'Y')
-    {
-        printf ("The contacts available:\n");
-        for (int i = 0; i < CONTACTSPACE; i++)
-        {
-            printf ("%s  %s  %s\n", person[i].name, person[i].phone, person[i].email); // prints each string and array in person line by line.
-        }
+    fclose(file);
+}
+
+void save_contacts(const char *filename) {
+    FILE *file = fopen(filename, "w");
+    if (!file) return;
+
+    for (int i = 0; i < contact_count; i++) {
+        fprintf(file, "%s,%s,%s\n", contacts[i].name, contacts[i].phone, contacts[i].email);
+    }
+    fclose(file);
+}
+
+void add_contact() {
+    char name[100], phone[100], email[100];
+
+    printf("Enter name: ");
+    fgets(name, sizeof(name), stdin);
+    name[strcspn(name, "\n")] = 0;
+
+    printf("Enter phone: ");
+    fgets(phone, sizeof(phone), stdin);
+    phone[strcspn(phone, "\n")] = 0;
+
+    printf("Enter email: ");
+    fgets(email, sizeof(email), stdin);
+    email[strcspn(email, "\n")] = 0;
+
+    contacts = realloc(contacts, sizeof(Contact) * (contact_count + 1));
+
+    contacts[contact_count].name = malloc(strlen(name) + 1);
+    strcpy(contacts[contact_count].name, name);
+    contacts[contact_count].phone = malloc(strlen(phone) + 1);
+    strcpy(contacts[contact_count].phone, phone);
+    contacts[contact_count].email = malloc(strlen(email) + 1);
+    strcpy(contacts[contact_count].email, email);
+
+    contact_count++;
+}
+
+void view_contacts() {
+    if (contact_count == 0) {
+        printf("No contacts available.\n");
+        return;
+    }
+    for (int i = 0; i < contact_count; i++) {
+        printf("%d. %s | %s | %s\n", i + 1, contacts[i].name, contacts[i].phone, contacts[i].email);
     }
 }
 
-//Function that lists contacts
-void list (contact *person)
-{
-    
-    printf ("The contacts available:\n");
-    for (int i = 0; i < USEDSPACE; i++)
-    {
-        printf ("%s  %s  %s\n", person[i].name, person[i].phone, person[i].email); // Prints out the available items in person
+void update_contact() {
+    view_contacts();
+    if (contact_count == 0) return;
+
+    int index;
+    printf("Enter contact number to update: ");
+    scanf("%d", &index);
+    getchar();
+
+    if (index < 1 || index > contact_count) {
+        printf("Invalid index.\n");
+        return;
     }
+    index--;
+
+    char name[100], phone[100], email[100];
+    printf("Enter new name: ");
+    fgets(name, sizeof(name), stdin);
+    name[strcspn(name, "\n")] = 0;
+
+    printf("Enter new phone: ");
+    fgets(phone, sizeof(phone), stdin);
+    phone[strcspn(phone, "\n")] = 0;
+
+    printf("Enter new email: ");
+    fgets(email, sizeof(email), stdin);
+    email[strcspn(email, "\n")] = 0;
+
+    free(contacts[index].name);
+    free(contacts[index].phone);
+    free(contacts[index].email);
+
+    contacts[index].name = malloc(strlen(name) + 1);
+    strcpy(contacts[index].name, name);
+    contacts[index].phone = malloc(strlen(phone) + 1);
+    strcpy(contacts[index].phone, phone);
+    contacts[index].email = malloc(strlen(email) + 1);
+    strcpy(contacts[index].email, email);
 }
 
-/*
-Searches for the contact the user is looking for
-It first seperates the firstname from the last name in both the user input and the available contacts 
-To allow the user to just type in the firstname if they like
-Then it turns everything to lowercase to prevent case from making the strcmp function malfunction
-Compares the user input to the available contact
-Then prints the corresponding contact
-*/
-void search(string *argv, contact *person)
-{
-    // Firstname for user input
-    int i, j,k;
-    char firstname[CONTACTSPACE][50]; 
-    for (i  =  0, j = strlen(NAME), k = 0; i < j; i++)
-    {
-        if (isspace(NAME[i]) || NAME[i] == '\0')
-            break;
-        else 
-        {
-            firstname[0][k] = NAME[i];
-            k++;
-        }
-    }
-    firstname[0][k] = '\0';
+void delete_contact() {
+    view_contacts();
+    if (contact_count == 0) return;
 
-    // Firstname for available contacts
-    int a, b,c;
-    for (int d = 0; d < 3; d++)
-    {
-        for (a  =  0, b = strlen(person[d].name), c = 0; a < b; a++)
-        {
-            if (isspace(person[d].name[a]) || person[d].name[a] == '\0')
-                break;
-            else 
-            {
-                firstname[d+1][c] = person[d].name[a];
-                c++;
-            }
-        }
-        firstname[d+1][c] = '\0';
-    }
+    int index;
+    printf("Enter contact number to delete: ");
+    scanf("%d", &index);
+    getchar();
 
-    // Changes everything to lowercase
-    for (int d = 0; d < CONTACTSPACE; d++)
-    {
-        for (int y = 0; firstname[d][y] != '\0'; y++)
-        {
-            firstname[d][y] = tolower(firstname[d][y]);
-        }
+    if (index < 1 || index > contact_count) {
+        printf("Invalid index.\n");
+        return;
     }
+    index--;
 
-    // Compares 
-    int d;
-    for (d = 1; d < CONTACTSPACE; d++)
-    {
-        if (strcmp(firstname[0], firstname[d]) == MATCH)
-        {
-            printf("Is the name your searching for?\n%s  %s  %s\n", person[d-1].name, person[d-1].phone, person[d-1].email); 
-            // It's D-1 because their positons in firstname is not the same as available contact (The user in put is also in firstname)
-            break;
-        }
-        else 
-            continue;
+    free(contacts[index].name);
+    free(contacts[index].phone);
+    free(contacts[index].email);
+
+    for (int i = index; i < contact_count - 1; i++) {
+        contacts[i] = contacts[i + 1];
     }
-    if (d == CONTACTSPACE)
-        printf("The person you are looking for is not saved here.\n");
+    contact_count--;
+    contacts = realloc(contacts, sizeof(Contact) * contact_count);
 }
 
-/*
-Searches for the contact the user is trying to delete 
-It first seperates the firstname from the last name in both the user input and the available contacts 
-This allows the user to just type in the firstname if they like
-Then it turns everything to lowercase to prevent case from making the strcmp function malfunction
-Compares the user input to the available contact
-Asks the user if their sure about the deletion 
-Asks them if they'd like to see the updated contacts list
-Then prints the contacts skipping over the one the user 'deleted'
-*/
-void cancel(string *argv, contact *person)
-{
-    // Seperating...
-    int i, j,k;
-    char firstname[CONTACTSPACE][50]; 
-    for (i  =  0, j = strlen(NAME), k = 0; i < j; i++)
-    {
-        if (isspace(NAME[i]) || NAME[i] == '\0')
-            break;
-        else 
-        {
-            firstname[0][k] = NAME[i];
-            k++;
-        }
+void free_contacts() {
+    for (int i = 0; i < contact_count; i++) {
+        free(contacts[i].name);
+        free(contacts[i].phone);
+        free(contacts[i].email);
     }
-    firstname[0][k] = '\0';
-
-    // Seperating...
-    int a, b,c;
-    for (int d = 0; d < USEDSPACE; d++)
-    {
-        for (a  =  0, b = strlen(person[d].name), c = 0; a < b; a++)
-        {
-            if (isspace(person[d].name[a]) || person[d].name[a] == '\0')
-                break;
-            else 
-            {
-                firstname[d+1][c] = person[d].name[a];
-                c++;
-            }
-        }
-        firstname[d+1][c] = '\0';
-    }
-
-    // Lowercasing ...
-    for (int d = 0; d < CONTACTSPACE; d++)
-    {
-        for (int y = 0; firstname[d][y] != '\0'; y++)
-        {
-            firstname[d][y] = tolower(firstname[d][y]);
-        }
-    }
-
-    // Fake deleting .....
-    int d;
-    char sure, list;
-    for (d = 1; d < CONTACTSPACE; d++)
-    {
-        if (strcmp(firstname[0], firstname[d]) == MATCH)
-        {
-            do
-            {
-                sure = get_char("Are you sure? (Y/n): "); // asks for affirmation
-            }
-            while (sure != 'y' && sure != 'Y' && sure != 'N' && sure != 'n');
-            if (sure == 'y' || sure == 'Y') 
-            {
-                do
-                {
-                    list = get_char("Do you want a list of the remaining contacts? (Y/n): "); // Asks if they want evidence
-                }
-                while (list != 'y' && list != 'Y' && list != 'N' && list != 'n');
-                if (list == 'y' || list == 'Y') 
-                {
-                    printf("Available Contacts:\n"); 
-                    for (int f = 0; f < USEDSPACE; f++)
-                    {
-                        if (f != d-1) // Prints the names skipping the fake deleted name
-                            printf ("%s \n", person[f].name); 
-                        else
-                            continue;
-                    }
-                    break;
-                }
-                else
-                {
-                    printf ("Ok\n");
-                    break;
-                }
-                
-            }
-            else
-            {
-                printf("Sure!\n");
-                break;
-            }
-        }
-        else 
-            continue;
-    }
-    if (d == CONTACTSPACE)
-        printf("The person you are trying to remove is not saved here.\n");
+    free(contacts);
 }
