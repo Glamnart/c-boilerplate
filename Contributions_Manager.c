@@ -440,22 +440,23 @@ void EditMember()
                 rename("temp.csv", MemberFile);
 
                 printf("Field Successfully Edited\n");
+
+                // Going back
+                char back;
+                do {
+                    printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
+                    scanf("%s", &back);
+                    getchar(); // consume newline
+                }
+                while(back != 'Y' && back != 'y' && back != 'N' && back != 'n');
+                if (back == 'Y' || back == 'y')
+                    MemberFunction();
+                else 
+                    printf("GOING BACK TO MAIN MENUE....\n");
             }
         }
     }
-
-    // Going back
-    char back;
-    do {
-        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
-        scanf("%s", &back);
-        getchar(); // consume newline
-    }
-    while(back != 'Y' && back != 'y' && back != 'N' && back != 'n');
-    if (back == 'Y' || back == 'y')
-        MemberFunction();
-    else 
-        printf("GOING BACK TO MAIN MENUE....\n");
+    
     return;
 }
 
@@ -1302,8 +1303,11 @@ void DefineTracking()
            "Weighted List:\n"
            "  This arrangement is based on how much the members paid (Descending order)(Bigger payers first).\n"
            "Random List:\n"
-           "  This arrangement gives random positions to the members.\n"
-           "____________________________________________________________________________________________\n");
+           "  This arrangement gives random positions to the members.\n\n"
+           "Note:\n"
+           "  According to the case study used to create this system members who pay 2 times the base amount are repeated twice on the list\n"
+           "Current base amount : %d\n"
+           "____________________________________________________________________________________________\n", UNITPAY);
 
     char back;
     do {
