@@ -1095,6 +1095,8 @@ void RandomList()
         current = temp;
     }
 
+    TrackList = NULL;
+
     char back;
     do {
         printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
@@ -1220,6 +1222,8 @@ void WeightedList()
         free(current);
         current = temp;
     }
+
+    TrackList = NULL;
 
     printf("List Successfully Generated\n");
 
