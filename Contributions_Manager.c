@@ -8,21 +8,23 @@
 #define TRUE 1
 #define UNITPAY 100000
 #define MAX_LINE_LEN 512
+#define MAX_NAME_LEN 50
+#define MAX_NUM_LEN 20
 
 // Struct for keeping members info
 typedef struct {
-    char name[50];
-    char phone[20];
-    char AccountNumber[20];
-    char BankName[20];
-    int ToPay;
+    char name[MAX_NAME_LEN + 1];
+    char phone[MAX_NUM_LEN + 1];
+    char AccountNumber[MAX_NUM_LEN + 1];
+    char BankName[MAX_NAME_LEN + 1];
+    double ToPay;
     int paid; // bool
 } members;
 
-// Struct for linked tracking list mmb 
+// Struct for singly linked lists 
 typedef struct Track {
-    char name[50];
-    int ToPay;
+    char name[MAX_NAME_LEN];
+    double ToPay;
     int position;
     struct Track* next;
 } Track;
@@ -32,22 +34,27 @@ members person;
 
 // Functions' prototypes arranged alphabetically.
     int Menue();
+
     void AddMember();
     void DeleteMember();
-    void DequeueList();
     void EditMember();
+    void MemberFunction();
+    void ViewAllMembers();
+    
     void ListPaid();
     void ListUnPaid();
-    void MakeList();
     void MarkPayment(); 
-    void MemberFunction();
-    void NewSeason();
-    void Payment();
     void ResetPayment();
+    void Payment();
+    
+    void DefineTracking();
+    void DequeueList();
+    void MakeList();
     void TrackingList();
-    void ViewAllMembers();
     void ViewList();
     void ViewMemberInfo();
+    
+    void NewSeason();
 //
 
 // Main files used
@@ -143,31 +150,69 @@ void AddMember()
         printf("File Error\n");
     else{ 
         //Getting the info from the user
-        printf("Enter name: ");
+
+        printf( "Do not exceed the maximum length for each field.\n"
+                "If you type more than the maximum, your input will be cut.\n"
+                "You will also need to press ENTER to continue the program.\n\n"
+            
+                "Enter name (Max: %d): ", MAX_NAME_LEN);
         fgets(person.name, sizeof(person.name), stdin);
-        person.name[strcspn(person.name, "\n")] = 0;
-        
-        printf("Enter phone: ");
+
+        if (!strchr(person.name, '\n'))
+        {
+            person.name[MAX_NAME_LEN] = '\0';
+            int c;
+            while ((c = getchar()) != '\n' && (c = getchar()) != EOF); // Ensures no memory leaks
+        }
+        else
+            person.name[strcspn(person.name, "\n")] = 0;
+
+        printf("Enter phone (Max: %d): ", MAX_NUM_LEN);
         fgets(person.phone, sizeof(person.phone), stdin);
-        person.phone[strcspn(person.phone, "\n")] = 0;
 
-        printf("Enter Account Number: ");
+        if (!strchr(person.phone, '\n'))
+        {
+            person.phone[MAX_NUM_LEN] = '\0';
+            int c;
+            while ((c = getchar()) != '\n' && (c = getchar()) != EOF); // Ensures no memory leaks
+        }
+        else
+            person.phone[strcspn(person.phone, "\n")] = 0;
+        
+        printf("Enter Account Number (Max: %d): ", MAX_NUM_LEN);
         fgets(person.AccountNumber, sizeof(person.AccountNumber), stdin);
-        person.AccountNumber[strcspn(person.AccountNumber, "\n")] = 0;
+          
+        if (!strchr(person.AccountNumber, '\n'))
+        {
+            person.AccountNumber[MAX_NUM_LEN] = '\0';
+            int c;
+            while ((c = getchar()) != '\n' && (c = getchar()) != EOF); // Ensures no memory leaks
+        }
+        else
+            person.AccountNumber[strcspn(person.AccountNumber, "\n")] = 0;
 
-        printf("Enter Bank Name: ");
+        printf("Enter Bank Name (Max: %d): ", MAX_NAME_LEN);
         fgets(person.BankName, sizeof(person.BankName), stdin);
-        person.BankName[strcspn(person.BankName, "\n")] = 0;
+
+        if (!strchr(person.BankName, '\n'))
+        {
+            person.BankName[MAX_NAME_LEN] = '\0';
+            int c;
+            while ((c = getchar()) != '\n' && (c = getchar()) != EOF); // Ensures no memory leaks
+        }
+        else
+            person.BankName[strcspn(person.BankName, "\n")] = 0;
+
 
         printf("Enter Amount To Pay: ");
-        scanf("%d", &person.ToPay);
+        scanf("%le", &person.ToPay);
         getchar(); // consume newline
-
+         
         person.paid = FALSE; 
 
         fprintf(
             file,
-            "%s,%s,%s,%s,%d,%i\n", 
+            "%s,%s,%s,%s,%.2f,%i\n", 
             person.name, person.phone, person.AccountNumber, person.BankName, person.ToPay, person.paid
         ); // Sending it to the member file's  end
         printf ("Member Successfully Added\n");
@@ -177,7 +222,7 @@ void AddMember()
     // Going back
     char back;
     do {
-    printf ("Would you like to go back (Y/n)? ");
+    printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
     scanf("%s", &back);
     getchar(); // consume newline
     }
@@ -185,7 +230,7 @@ void AddMember()
     if (back == 'Y' || back == 'y')
         MemberFunction();
     else 
-        printf("EXITING....\n");
+        printf("GOING BACK TO MAIN MENUE....\n");
     return;
 }
 
@@ -266,7 +311,7 @@ void DeleteMember()
     char back;
     do 
     {
-        printf("Would you like to go back (Y/n)? ");
+        printf("Would you like to go back to the menue you just came back from (Y/n)? ");
         scanf("%s", &back);
         getchar(); // consume newline
     }
@@ -275,7 +320,7 @@ void DeleteMember()
     if (back == 'Y' || back == 'y')
         MemberFunction();
     else 
-        printf("EXITING....\n");
+        printf("GOING BACK TO MAIN MENUE....\n");
     return; 
 }
 
@@ -367,20 +412,17 @@ void EditMember()
                         strcpy(person.BankName, strtok(NULL, ",\n")); // Saves Bank Name
                         person.ToPay = atoi(strtok(NULL, ",\n")); // Saves Amount to Pay
                         char *rest = strtok(NULL, "\n"); // Saves the rest
-
-
+                        
                         printf("Enter new data: "); // Gets the new data
-
                         switch(choice2)
                         {
-                            case 1: fgets(person.name, 50, stdin); person.name[strcspn(person.name, "\n")] = 0; break; // Replaces name if chosen
-                            case 2: fgets(person.phone, 20, stdin); person.phone[strcspn(person.phone, "\n")] = 0; break; // Replaces Phone if chosen
-                            case 3: fgets(person.AccountNumber, 20, stdin); person.AccountNumber[strcspn(person.AccountNumber, "\n")] = 0; break; // Replaces Account Number if chosen
-                            case 4: fgets(person.BankName, 20, stdin); person.BankName[strcspn(person.BankName, "\n")] = 0; break; // Replaces Bank Name if chosen
-                            case 5: scanf("%d", &person.ToPay); getchar(); break; // Replaces Amount to Pay if chosen
+                            case 1: fgets(person.name, MAX_NAME_LEN, stdin); person.name[strcspn(person.name, "\n")] = 0; break; // Replaces name if chosen
+                            case 2: fgets(person.phone, MAX_NUM_LEN, stdin); person.phone[strcspn(person.phone, "\n")] = 0; break; // Replaces Phone if chosen
+                            case 3: fgets(person.AccountNumber, MAX_NUM_LEN, stdin); person.AccountNumber[strcspn(person.AccountNumber, "\n")] = 0; break; // Replaces Account Number if chosen
+                            case 4: fgets(person.BankName, MAX_NUM_LEN, stdin); person.BankName[strcspn(person.BankName, "\n")] = 0; break; // Replaces Bank Name if chosen
+                            case 5: scanf("%le", &person.ToPay); getchar(); break; // Replaces Amount to Pay if chosen
                         }
-                        
-                        fprintf(temp, "%s,%s,%s,%s,%d,%s\n", person.name, person.phone, person.AccountNumber, person.BankName, person.ToPay, rest); // Prints to temp file.
+                        fprintf(temp, "%s,%s,%s,%s,%.2f,%s\n", person.name, person.phone, person.AccountNumber, person.BankName, person.ToPay, rest); // Prints to temp file.
                     }
                     else 
                     {
@@ -405,7 +447,7 @@ void EditMember()
     // Going back
     char back;
     do {
-        printf ("Would you like to go back (Y/n)? ");
+        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
         scanf("%s", &back);
         getchar(); // consume newline
     }
@@ -413,7 +455,7 @@ void EditMember()
     if (back == 'Y' || back == 'y')
         MemberFunction();
     else 
-        printf("EXITING....\n");
+        printf("GOING BACK TO MAIN MENUE....\n");
     return;
 }
 
@@ -507,7 +549,7 @@ void ViewMemberInfo()
                     {
                         case 1: printf("%s\n", person.phone); break; // Prints name if asked
                         case 2: printf("%s (%s)\n", person.BankName, person.AccountNumber); break; // Prints Account Details if asked
-                        case 3: printf("%d\n", person.ToPay); break; // Prints Amount to Pay if asked
+                        case 3: printf("%.2f\n", person.ToPay); break; // Prints Amount to Pay if asked
                     }
                     break;
                 }
@@ -518,7 +560,7 @@ void ViewMemberInfo()
             // Going back
             char back;
             do {
-                printf ("Would you like to go back (Y/n)? ");
+                printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
                 scanf("%s", &back);
                 getchar(); // consume newline
             }
@@ -526,7 +568,7 @@ void ViewMemberInfo()
             if (back == 'Y' || back == 'y')
                 MemberFunction();
             else 
-                printf("EXITING....\n");
+                printf("GOING BACK TO MAIN MENUE....\n");
         }
     }
     return;
@@ -555,7 +597,7 @@ void ViewAllMembers()
         strcpy(person.BankName, strtok(NULL, ",\n")); // Saves Bank Name
         person.ToPay = atoi(strtok(NULL, ",\n")); // Saves Amount to Pay
 
-        printf("%s||%s||%s||%s||%d\n", person.name, person.phone, person.AccountNumber, person.BankName, person.ToPay);
+        printf("%s||%s||%s||%s||%.2f\n", person.name, person.phone, person.AccountNumber, person.BankName, person.ToPay);
         members_count++;
     }
 
@@ -566,15 +608,15 @@ void ViewAllMembers()
     // Going back
     char back;
     do {
-        printf ("Would you like to go back (Y/n)? ");
-        scanf("%s", &back);
+        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
+        scanf(" %c", &back);
         getchar(); // consume newline
     }
     while(back != 'Y' && back != 'y' && back != 'N' && back != 'n');
     if (back == 'Y' || back == 'y')
         MemberFunction();
     else 
-        printf("EXITING....\n"); 
+        printf("GOING BACK TO MAIN MENUE....\n"); 
     return;
 }
 
@@ -642,7 +684,7 @@ void ListPaid()
     // Going back
     char back;
     do {
-        printf ("Would you like to go back (Y/n)? ");
+        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
         scanf("%s", &back);
         getchar(); // consume newline
     }
@@ -650,7 +692,7 @@ void ListPaid()
     if (back == 'Y' || back == 'y')
         Payment();
     else 
-        printf("EXITING....\n"); 
+        printf("GOING BACK TO MAIN MENUE....\n"); 
     return;
 }
 
@@ -682,7 +724,7 @@ void ListUnPaid()
         printf("Everyone has paid\n");
     char back;
     do {
-        printf ("Would you like to go back (Y/n)? ");
+        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
         scanf("%s", &back);
         getchar(); // consume newline
     }
@@ -690,7 +732,7 @@ void ListUnPaid()
     if (back == 'Y' || back == 'y')
         Payment();
     else 
-        printf("EXITING....\n"); 
+        printf("GOING BACK TO MAIN MENUE....\n"); 
     return;
 }
 
@@ -754,7 +796,7 @@ void MarkPayment()
 
                 person.paid = TRUE;
 
-                fprintf(temp, "%s,%s,%s,%s,%d,%i\n", person.name, person.phone, person.AccountNumber, person.BankName, person.ToPay, person.paid);
+                fprintf(temp, "%s,%s,%s,%s,%.2f,%i\n", person.name, person.phone, person.AccountNumber, person.BankName, person.ToPay, person.paid);
             }
             else 
             {
@@ -771,7 +813,7 @@ void MarkPayment()
         printf("Confirmed \n");
         char back;
         do {
-            printf ("Would you like to go back (Y/n)? ");
+            printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
             scanf("%s", &back);
             getchar(); // consume newline
         }
@@ -779,7 +821,7 @@ void MarkPayment()
         if (back == 'Y' || back == 'y')
             Payment();
         else 
-            printf("EXITING....\n");
+            printf("GOING BACK TO MAIN MENUE...\n");
     }
     return;
 }
@@ -807,7 +849,7 @@ void ResetPayment()
 
         person.paid = FALSE;
 
-        fprintf(temp, "%s,%s,%s,%s,%d,%i\n", person.name, person.phone, person.AccountNumber, person.BankName, person.ToPay, person.paid);
+        fprintf(temp, "%s,%s,%s,%s,%.2f,%i\n", person.name, person.phone, person.AccountNumber, person.BankName, person.ToPay, person.paid);
     }
     fclose(file);
     fclose(temp);
@@ -819,7 +861,7 @@ void ResetPayment()
 
     char back;
     do {
-        printf ("Would you like to go back (Y/n)? ");
+        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
         scanf("%s", &back);
         getchar(); // consume newline
     }
@@ -827,7 +869,7 @@ void ResetPayment()
     if (back == 'Y' || back == 'y')
         Payment();
     else 
-        printf("EXITING....\n");
+        printf("GOING BACK TO MAIN MENUE....\n");
     return;
 }
 
@@ -840,20 +882,22 @@ void TrackingList()
             "Do you want to :\n"
            "1.) View Tracking list\n"
            "2.) Make Tracking List\n"
-           "3.) Dequeue Tracking List\n"
+           "3.) Who's next on the list?\n"
+           "4.) What is a 'Tracking List'?\n"
            "0.) Back\n"
            "_______________________\n"
            "Choice: ");
     scanf("%d", &choice);
     getchar(); // consume newline
-    if (choice > 3 || choice < 0)
+    if (choice > 4 || choice < 0)
         printf("Invalid Choice\n");   
     } 
-    while(choice > 3 || choice < 0);
+    while(choice > 4 || choice < 0);
     switch (choice) {
         case 1: ViewList(); break;
         case 2: MakeList(); break;
         case 3: DequeueList(); break;
+        case 4: DefineTracking(); break;
         case 0: return;       
     }
     return;
@@ -861,7 +905,7 @@ void TrackingList()
 
 void ViewList()
 {
-    char line[50];
+    char line[MAX_NAME_LEN];
     int k = 0;
     FILE *file = fopen(TrackingFile, "r");
     if (!file)
@@ -881,7 +925,7 @@ void ViewList()
 
     char back;
     do {
-        printf ("Would you like to go back (Y/n)? ");
+        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
         scanf("%s", &back);
         getchar(); // consume newline
     }
@@ -889,7 +933,7 @@ void ViewList()
     if (back == 'Y' || back == 'y')
         TrackingList();
     else 
-        printf("EXITING....\n");
+        printf("GOING BACK TO MAIN MENUE....\n");
     return;
 }
 
@@ -939,13 +983,6 @@ void RandomList()
     
     Track* current = TrackList;
     Track *temp;
-    // free all
-    while (current != NULL)
-    {
-        temp = current->next;
-        free(current);
-        current = temp;
-    }
 
     while (fgets(line, sizeof(line), member))
     { 
@@ -1007,7 +1044,7 @@ void RandomList()
                 int p = current->position, q = current->next->position;
                 if(q < p)
                 {
-                    char tempName[50];
+                    char tempName[MAX_NAME_LEN];
 
                     int tempPos = current->position;
                     strcpy(tempName, current->name);
@@ -1060,7 +1097,7 @@ void RandomList()
 
     char back;
     do {
-        printf ("Would you like to go back (Y/n)? ");
+        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
         scanf("%s", &back);
         getchar(); // consume newline
     }
@@ -1068,7 +1105,7 @@ void RandomList()
     if (back == 'Y' || back == 'y')
         TrackingList();
     else 
-        printf("EXITING....\n");
+        printf("GOING BACK TO MAIN MENUE....\n");
     return;
 }
 
@@ -1088,12 +1125,6 @@ void WeightedList()
 
     Track* current = TrackList;
     Track *temp;
-    while (current != NULL)
-    {
-        temp = current->next;
-        free(current);
-        current = temp;
-    }
 
     while (fgets(line, sizeof(line), member))
     { 
@@ -1145,7 +1176,7 @@ void WeightedList()
             int p = current->ToPay, q = current->next->ToPay;
             if(p < q)
             {
-                char tempName[50];
+                char tempName[MAX_NAME_LEN];
 
                 strcpy(tempName, current->name);
                 int tempPaid = current->ToPay;
@@ -1194,7 +1225,7 @@ void WeightedList()
 
     char back;
     do {
-        printf ("Would you like to go back (Y/n)? ");
+        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
         scanf("%s", &back);
         getchar(); // consume newline
     }
@@ -1202,7 +1233,7 @@ void WeightedList()
     if (back == 'Y' || back == 'y')
         TrackingList();
     else 
-        printf("EXITING....\n");
+        printf("GOING BACK TO MAIN MENUE....\n");
     return;
 }
 
@@ -1215,7 +1246,7 @@ void DequeueList()
         printf("Error opening file.\n");
     else
     {
-        char line[50], past[50], next[50];
+        char line[MAX_NAME_LEN], past[MAX_NAME_LEN], next[MAX_NAME_LEN];
         int i = 1;
 
         while(fgets(line, sizeof(line), list))
@@ -1246,7 +1277,7 @@ void DequeueList()
     }
     char back;
     do {
-        printf ("Would you like to go back (Y/n)? ");
+        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
         scanf("%s", &back);
         getchar(); // consume newline
     }
@@ -1254,7 +1285,33 @@ void DequeueList()
     if (back == 'Y' || back == 'y')
         TrackingList();
     else 
-        printf("EXITING....\n");
+        printf("GOING BACK TO MAIN MENUE....\n");
+    return;
+}
+
+void DefineTracking()
+{
+    printf("____________________________________________________________________________________________\n\n"
+    
+           "Tracking List:\n"
+           "  This list allocates the turns for recieveing the total contributions in a season.\n"
+           "Weighted List:\n"
+           "  This arrangement is based on how much the members paid (Descending order)(Bigger payers first).\n"
+           "Random List:\n"
+           "  This arrangement gives random positions to the members.\n"
+           "____________________________________________________________________________________________\n");
+
+    char back;
+    do {
+        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
+        scanf("%s", &back);
+        getchar(); // consume newline
+    }
+    while(back != 'Y' && back != 'y' && back != 'N' && back != 'n');
+    if (back == 'Y' || back == 'y')
+        TrackingList();
+    else 
+        printf("GOING BACK TO MAIN MENUE...\n");
     return;
 }
 
