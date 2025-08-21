@@ -33,7 +33,7 @@ Track *TrackList  = NULL; // queue pointer set to NULL
 members person;
 
 // Functions' prototypes arranged alphabetically.
-    int Menue();
+    int menu();
 
     void AddMember();
     void DeleteMember();
@@ -66,9 +66,9 @@ int main(int argc, char *argv[])
     int menue;
     if (argc != 1)
         printf("No command line arguement needed\nJust %s.\n", argv[0]);
-    // Goes to main menue, then moves based on user's choice
+    // Goes to main menu, then moves based on user's choice
     do{
-        menue = Menue();
+        menue = menu();
         switch (menue) {
             case 1: MemberFunction(); break;
             case 2: Payment(); break;
@@ -81,8 +81,8 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-// Function that displays the main menue
-int Menue()
+// Function that displays the main menu
+int menu()
 {
     int choice;
     do{
@@ -91,7 +91,7 @@ int Menue()
             "What would you like to do?\n"
             "1.) Add / Delete / Edit / View Member Information\n"
             "2.) Confirm Payment\n"
-            "3.) Trackling List Options\n"
+            "3.) Tracking List Options\n"
             "4.) New Season\n"
             "5.) Save & Exit\n"
             "____________________________________________________\n"
@@ -108,7 +108,7 @@ int Menue()
     return choice;        
 }
 
-// Function that displays the members menue
+// Function that displays the members menu
 void MemberFunction()
 {
     int choice;
@@ -222,7 +222,7 @@ void AddMember()
     // Going back
     char back;
     do {
-    printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
+    printf ("Would you like to go back to the menu you just came back from (Y/n)? ");
     scanf("%s", &back);
     getchar(); // consume newline
     }
@@ -230,7 +230,7 @@ void AddMember()
     if (back == 'Y' || back == 'y')
         MemberFunction();
     else 
-        printf("GOING BACK TO MAIN MENUE....\n");
+        printf("GOING BACK TO MAIN menu....\n");
     return;
 }
 
@@ -311,7 +311,7 @@ void DeleteMember()
     char back;
     do 
     {
-        printf("Would you like to go back to the menue you just came back from (Y/n)? ");
+        printf("Would you like to go back to the menu you just came back from (Y/n)? ");
         scanf("%s", &back);
         getchar(); // consume newline
     }
@@ -320,7 +320,7 @@ void DeleteMember()
     if (back == 'Y' || back == 'y')
         MemberFunction();
     else 
-        printf("GOING BACK TO MAIN MENUE....\n");
+        printf("GOING BACK TO MAIN menu....\n");
     return; 
 }
 
@@ -444,7 +444,7 @@ void EditMember()
                 // Going back
                 char back;
                 do {
-                    printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
+                    printf ("Would you like to go back to the menu you just came back from (Y/n)? ");
                     scanf("%s", &back);
                     getchar(); // consume newline
                 }
@@ -452,7 +452,7 @@ void EditMember()
                 if (back == 'Y' || back == 'y')
                     MemberFunction();
                 else 
-                    printf("GOING BACK TO MAIN MENUE....\n");
+                    printf("GOING BACK TO MAIN menu....\n");
             }
         }
     }
@@ -561,7 +561,7 @@ void ViewMemberInfo()
             // Going back
             char back;
             do {
-                printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
+                printf ("Would you like to go back to the menu you just came back from (Y/n)? ");
                 scanf("%s", &back);
                 getchar(); // consume newline
             }
@@ -569,7 +569,7 @@ void ViewMemberInfo()
             if (back == 'Y' || back == 'y')
                 MemberFunction();
             else 
-                printf("GOING BACK TO MAIN MENUE....\n");
+                printf("GOING BACK TO MAIN menu....\n");
         }
     }
     return;
@@ -609,7 +609,7 @@ void ViewAllMembers()
     // Going back
     char back;
     do {
-        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
+        printf ("Would you like to go back to the menu you just came back from (Y/n)? ");
         scanf(" %c", &back);
         getchar(); // consume newline
     }
@@ -617,13 +617,13 @@ void ViewAllMembers()
     if (back == 'Y' || back == 'y')
         MemberFunction();
     else 
-        printf("GOING BACK TO MAIN MENUE....\n"); 
+        printf("GOING BACK TO MAIN menu....\n"); 
     return;
 }
 
 void Payment()
 {
-    // Payment menue
+    // Payment menu
     int choice;
     do{
     printf("______________________\n\n"
@@ -685,7 +685,7 @@ void ListPaid()
     // Going back
     char back;
     do {
-        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
+        printf ("Would you like to go back to the menu you just came back from (Y/n)? ");
         scanf("%s", &back);
         getchar(); // consume newline
     }
@@ -693,7 +693,7 @@ void ListPaid()
     if (back == 'Y' || back == 'y')
         Payment();
     else 
-        printf("GOING BACK TO MAIN MENUE....\n"); 
+        printf("GOING BACK TO MAIN menu....\n"); 
     return;
 }
 
@@ -725,7 +725,7 @@ void ListUnPaid()
         printf("Everyone has paid\n");
     char back;
     do {
-        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
+        printf ("Would you like to go back to the menu you just came back from (Y/n)? ");
         scanf("%s", &back);
         getchar(); // consume newline
     }
@@ -733,7 +733,7 @@ void ListUnPaid()
     if (back == 'Y' || back == 'y')
         Payment();
     else 
-        printf("GOING BACK TO MAIN MENUE....\n"); 
+        printf("GOING BACK TO MAIN menu....\n"); 
     return;
 }
 
@@ -814,7 +814,7 @@ void MarkPayment()
         printf("Confirmed \n");
         char back;
         do {
-            printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
+            printf ("Would you like to go back to the menu you just came back from (Y/n)? ");
             scanf("%s", &back);
             getchar(); // consume newline
         }
@@ -822,7 +822,7 @@ void MarkPayment()
         if (back == 'Y' || back == 'y')
             Payment();
         else 
-            printf("GOING BACK TO MAIN MENUE...\n");
+            printf("GOING BACK TO MAIN menu...\n");
     }
     return;
 }
@@ -862,7 +862,7 @@ void ResetPayment()
 
     char back;
     do {
-        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
+        printf ("Would you like to go back to the menu you just came back from (Y/n)? ");
         scanf("%s", &back);
         getchar(); // consume newline
     }
@@ -870,7 +870,7 @@ void ResetPayment()
     if (back == 'Y' || back == 'y')
         Payment();
     else 
-        printf("GOING BACK TO MAIN MENUE....\n");
+        printf("GOING BACK TO MAIN menu....\n");
     return;
 }
 
@@ -926,7 +926,7 @@ void ViewList()
 
     char back;
     do {
-        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
+        printf ("Would you like to go back to the menu you just came back from (Y/n)? ");
         scanf("%s", &back);
         getchar(); // consume newline
     }
@@ -934,7 +934,7 @@ void ViewList()
     if (back == 'Y' || back == 'y')
         TrackingList();
     else 
-        printf("GOING BACK TO MAIN MENUE....\n");
+        printf("GOING BACK TO MAIN menu....\n");
     return;
 }
 
@@ -1100,7 +1100,7 @@ void RandomList()
 
     char back;
     do {
-        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
+        printf ("Would you like to go back to the menu you just came back from (Y/n)? ");
         scanf("%s", &back);
         getchar(); // consume newline
     }
@@ -1108,7 +1108,7 @@ void RandomList()
     if (back == 'Y' || back == 'y')
         TrackingList();
     else 
-        printf("GOING BACK TO MAIN MENUE....\n");
+        printf("GOING BACK TO MAIN menu....\n");
     return;
 }
 
@@ -1230,7 +1230,7 @@ void WeightedList()
 
     char back;
     do {
-        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
+        printf ("Would you like to go back to the menu you just came back from (Y/n)? ");
         scanf("%s", &back);
         getchar(); // consume newline
     }
@@ -1238,7 +1238,7 @@ void WeightedList()
     if (back == 'Y' || back == 'y')
         TrackingList();
     else 
-        printf("GOING BACK TO MAIN MENUE....\n");
+        printf("GOING BACK TO MAIN menu....\n");
     return;
 }
 
@@ -1282,7 +1282,7 @@ void DequeueList()
     }
     char back;
     do {
-        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
+        printf ("Would you like to go back to the menu you just came back from (Y/n)? ");
         scanf("%s", &back);
         getchar(); // consume newline
     }
@@ -1290,7 +1290,7 @@ void DequeueList()
     if (back == 'Y' || back == 'y')
         TrackingList();
     else 
-        printf("GOING BACK TO MAIN MENUE....\n");
+        printf("GOING BACK TO MAIN menu....\n");
     return;
 }
 
@@ -1311,7 +1311,7 @@ void DefineTracking()
 
     char back;
     do {
-        printf ("Would you like to go back to the menue you just came back from (Y/n)? ");
+        printf ("Would you like to go back to the menu you just came back from (Y/n)? ");
         scanf("%s", &back);
         getchar(); // consume newline
     }
@@ -1319,7 +1319,7 @@ void DefineTracking()
     if (back == 'Y' || back == 'y')
         TrackingList();
     else 
-        printf("GOING BACK TO MAIN MENUE...\n");
+        printf("GOING BACK TO MAIN menu...\n");
     return;
 }
 
